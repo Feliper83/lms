@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: Mini LMS API
+  description: API documentation for the Mini Library Management System
+  version: 1.0.0
+paths:
+  /api/books:
+    post:
+      summary: Add a new book
+      security:
+        - bearerAuth: []
+      tags:
+        - Books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookRequest'
+      responses:
+        '201':
+          description: Book created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+  /api/books/search:
+    get:
+      summary: Search books
+      security:
+        - bearerAuth: []
+      tags:
+        - Books
+      parameters:
+        - name: title
+          in: query
+          schema:
+            type: string
+        - name: author
+          in: query
+          schema:
+            type: string
+        - name: isbn
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BookResponse'
+  /api/books/{id}:
+    get:
+      summary: Get a book by ID
+      security:
+        - bearerAuth: []
+      tags:
+        - Books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Book details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+  /api/users:
+    get:
+      summary: Get all users
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponse'
+    post:
+      summary: Create a new user
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /api/users/{id}:
+    get:
+      summary: Get a user by ID
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    put:
+      summary: Update user
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequest'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    delete:
+      summary: Delete user
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: User deleted
+  /api/users/{userId}/borrow/{bookId}:
+    post:
+      summary: Borrow a book
+      security:
+        - bearerAuth: []
+      tags:
+        - Borrowing
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Borrowed book details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BorrowingRecordResponse'
+  /api/users/{userId}/return/{bookId}:
+    put:
+      summary: Return a book
+      security:
+        - bearerAuth: []
+      tags:
+        - Borrowing
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: bookId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Returned book details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BorrowingRecordResponse'
+  /api/users/{userId}/books:
+    get:
+      summary: Get borrowed books
+      security:
+        - bearerAuth: []
+      tags:
+        - Borrowing
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of borrowed books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BorrowingRecordResponse'
+  /api/users/{userId}/history:
+    get:
+      summary: Get borrowing history
+      security:
+        - bearerAuth: []
+      tags:
+        - Borrowing
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Borrowing history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BorrowingRecordResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    BookRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        isbn:
+          type: string
+        available:
+          type: boolean
+        author:
+          $ref: '#/components/schemas/Author'
+    BookResponse:
+      allOf:
+        - $ref: '#/components/schemas/BookRequest'
+    UserRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        libraryId:
+          type: string
+        password:
+          type: string
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/UserRequest'
+    BorrowingRecordResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        user:
+          $ref: '#/components/schemas/UserResponse'
+        book:
+          $ref: '#/components/schemas/BookResponse'
+        borrowDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        returnedDate:
+          type: string
+          format: date
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
