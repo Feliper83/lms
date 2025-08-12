@@ -22,10 +22,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui.html",       // Swagger UI
                                 "/swagger-ui/**",         // Swagger static resources
-                                "/v3/api-docs/**",        // OpenAPI spec (default path)
                                 "/api-docs",              // Custom path in application.properties
-                                "/openapi.yaml",
-                                "/h2-console/**"          // H2 console
+                                "/api-docs/**",              // Custom path in application.properties
+                                "/swagger.yaml",
+                                "/h2-console/**",          // H2 console
+                                "/api/users",
+                                "/api/users/**",
+                                "/api/books",
+                                "/api/books/**",
+                                "/book-api-docs",
+                                "/book-api-docs/**"
                         ).permitAll()
 
                         // Secure all other endpoints
